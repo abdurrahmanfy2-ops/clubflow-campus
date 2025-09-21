@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
-import { GraduationCap, Mail, Lock, User, Building2 } from "lucide-react";
+import { GraduationCap, Mail, Lock, User, Building2, Users } from "lucide-react";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -26,12 +26,12 @@ const Signup = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/5 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <div className="bg-primary text-primary-foreground p-3 rounded-full">
-              <GraduationCap className="h-8 w-8" />
+          <Link to="/" className="flex items-center justify-center mb-4 group">
+            <div className="bg-primary text-primary-foreground p-3 rounded-full group-hover:bg-primary/90 transition-colors">
+              <Users className="h-8 w-8" />
             </div>
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">Join Campus Club Suite</h1>
+          </Link>
+          <h1 className="text-3xl font-bold text-foreground">Join CampBuzz</h1>
           <p className="text-muted-foreground mt-2">Create your account to get started</p>
         </div>
 

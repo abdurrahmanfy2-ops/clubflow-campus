@@ -13,6 +13,8 @@ import Clubs from "./pages/Clubs";
 import Collaboration from "./pages/Collaboration";
 import Communication from "./pages/Communication";
 import Settings from "./pages/Settings";
+import Recommendations from "./pages/Recommendations";
+import BudgetSponsorship from "./pages/BudgetSponsorship";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +37,8 @@ const App = () => (
           <Route path="/collaboration" element={<Layout><Collaboration /></Layout>} />
           <Route path="/communication" element={<Layout><Communication /></Layout>} />
           <Route path="/settings" element={<Layout><Settings /></Layout>} />
+          <Route path="/recommendations" element={<Layout><Recommendations /></Layout>} />
+          <Route path="/budget-sponsorship" element={<Layout><BudgetSponsorship /></Layout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

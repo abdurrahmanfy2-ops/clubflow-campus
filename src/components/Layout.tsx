@@ -34,7 +34,9 @@ import {
   CheckCircle,
   XCircle,
   Eye,
-  EyeOff
+  EyeOff,
+  Sparkles,
+  Wallet
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -61,6 +63,8 @@ const Layout = ({ children }: LayoutProps) => {
     { name: "Clubs", href: "/clubs", icon: Users },
     { name: "Collaboration", href: "/collaboration", icon: MessageSquare },
     { name: "Communication", href: "/communication", icon: Mail },
+    { name: "AI Recommendations", href: "/recommendations", icon: Sparkles },
+    { name: "Budget & Sponsorship", href: "/budget-sponsorship", icon: Wallet },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 

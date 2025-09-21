@@ -110,13 +110,13 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="font-bold text-xl text-white tracking-tight" style={{
-                  textShadow: '0 0 20px hsl(var(--campus-green)), 0 0 40px hsl(var(--campus-green))',
+                  textShadow: '0 0 10px hsl(var(--campus-green)), 0 0 20px hsl(var(--campus-green))',
                   background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text'
-                }}>Campus Club Suite</h1>
-                <p className="text-sm text-gray-300/80">Management Platform</p>
+                }}>CampBuzz</h1>
+                <p className="text-sm text-gray-300/80">Campus Management Platform</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -166,7 +166,7 @@ const Index = () => {
                   </div>
 
                   <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[0.9] tracking-tight text-white" style={{
-                    textShadow: '0 0 30px hsl(var(--campus-green)), 0 0 60px hsl(var(--campus-green)), 0 0 90px hsl(var(--campus-green))',
+                    textShadow: '0 0 15px hsl(var(--campus-green)), 0 0 30px hsl(var(--campus-green))',
                     lineHeight: '1.1',
                     letterSpacing: '-0.02em'
                   }}>
@@ -178,8 +178,8 @@ const Index = () => {
                       WebkitTextFillColor: 'transparent',
                       backgroundClip: 'text'
                     }}>
-                      Campus Club
-                      <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[hsl(var(--campus-green))] to-transparent opacity-60"></div>
+                      CampBuzz
+                      <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[hsl(var(--campus-green))] to-transparent opacity-30"></div>
                     </span>
                     <br />
                     Management

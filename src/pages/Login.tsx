@@ -93,14 +93,14 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-6">
+            <Link to="/" className="flex items-center justify-center mb-6 group">
               <div className="relative">
-                <div className="absolute inset-0 bg-[hsl(var(--campus-green))] rounded-lg blur-sm opacity-50 animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-[hsl(var(--campus-green))] to-[hsl(var(--campus-green))]/80 text-[hsl(var(--campus-navy))] p-3 rounded-lg shadow-lg">
-                  <GraduationCap className="h-8 w-8" />
+                <div className="absolute inset-0 bg-[hsl(var(--campus-green))] rounded-lg blur-sm opacity-50 animate-pulse group-hover:opacity-75 transition-opacity"></div>
+                <div className="relative bg-gradient-to-br from-[hsl(var(--campus-green))] to-[hsl(var(--campus-green))]/80 text-[hsl(var(--campus-navy))] p-3 rounded-lg shadow-lg group-hover:shadow-xl transition-shadow">
+                  <Users className="h-8 w-8" />
                 </div>
               </div>
-            </div>
+            </Link>
 
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight" style={{
               textShadow: '0 0 20px hsl(var(--campus-green)), 0 0 40px hsl(var(--campus-green))',
@@ -112,10 +112,10 @@ const Login = () => {
               Welcome Back
             </h1>
 
-            <p className="text-lg text-gray-300 mb-2">Log in to Campus Club Suite</p>
+            <p className="text-lg text-gray-300 mb-2">Log in to CampBuzz Management Suite</p>
             <div className="inline-flex items-center px-3 py-1 bg-[hsl(var(--campus-green))]/10 backdrop-blur-sm text-[hsl(var(--campus-green))] text-sm font-medium rounded-full border border-[hsl(var(--campus-green))]/20">
               <Sparkles className="h-3 w-3 mr-1" />
-              Enterprise Campus Management Suite
+              CampBuzz Management Suite
             </div>
           </div>
 
@@ -237,7 +237,7 @@ const Login = () => {
                   <div className="w-full border-t border-white/10"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-transparent text-gray-400">New to Campus Club Suite?</span>
+                  <span className="px-4 bg-transparent text-gray-400">New to CampBuzz?</span>
                 </div>
               </div>
 
@@ -266,7 +266,7 @@ const Login = () => {
           {/* Professional Features Showcase */}
           <div className="mt-8 space-y-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-white mb-4">Why Choose Campus Club Suite?</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Why Choose CampBuzz?</h3>
 
               {/* Core Features */}
               <div className="grid grid-cols-1 gap-3 text-sm mb-6">

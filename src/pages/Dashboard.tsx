@@ -2,14 +2,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, Calendar, Trophy, TrendingUp, Plus, Menu, Bell, Search, Settings, MessageSquare, Mail, Smartphone, Megaphone, Send, Archive, Filter, Star } from "lucide-react";
+import { Users, Calendar, Trophy, TrendingUp, Plus, Menu, Bell, Search, Settings, MessageSquare, Mail, Smartphone, Megaphone, Send, Archive, Filter, Star, Activity, DollarSign, ArrowRight, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import EventRecommendations from "@/components/EventRecommendations";
+import LoadingScreen from "@/components/LoadingScreen";
+import DashboardSettings from "@/components/DashboardSettings";
+import CalendarModal from "@/components/CalendarModal";
+import AdvancedTechFeatures from "@/components/AdvancedTechFeatures";
 
 const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [notificationCount, setNotificationCount] = useState(5);
+  const [showNotificationPanel, setShowNotificationPanel] = useState(false);
+  const [notificationsViewed, setNotificationsViewed] = useState(false);
+  const [hasOpenedNotifications, setHasOpenedNotifications] = useState(false);
+  const [showSettingsPanel, setShowSettingsPanel] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
 
   // Mock data
   const stats = [
@@ -49,76 +60,47 @@ const Dashboard = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Close notification panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (showNotificationPanel && !target.closest('.notification-container')) {
+        setShowNotificationPanel(false);
+      }
+      if (showSettingsPanel && !target.closest('.settings-container')) {
+        setShowSettingsPanel(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showNotificationPanel, showSettingsPanel]);
+
+  // Simulate new notifications (pause when panel is open)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNotificationCount(prev => {
+        // Don't add new notifications when panel is open
+        if (showNotificationPanel) {
+          return prev;
+        }
+        // Randomly increase notifications (simulating real activity)
+        if (Math.random() < 0.3) { // 30% chance every 30 seconds
+          // Only reset notificationsViewed if panel is closed
+          if (!showNotificationPanel) {
+            setNotificationsViewed(false);
+          }
+          return prev + 1;
+        }
+        return prev;
+      });
+    }, 30000); // Check every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [showNotificationPanel]);
+
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        {/* Sticky Header Skeleton */}
-        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-lg" />
-                <div>
-                  <Skeleton className="h-6 w-32 mb-1" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-10 w-10 rounded-full" />
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Content Skeleton */}
-        <div className="container mx-auto px-4 py-6 space-y-6">
-          <div>
-            <Skeleton className="h-8 w-48 mb-2" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i} className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-8 w-16" />
-                    <Skeleton className="h-3 w-12" />
-                  </div>
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {[...Array(2)].map((_, i) => (
-              <Card key={i} className="p-6">
-                <div className="space-y-4">
-                  <div>
-                    <Skeleton className="h-6 w-32 mb-2" />
-                    <Skeleton className="h-4 w-48" />
-                  </div>
-                  {[...Array(3)].map((_, j) => (
-                    <div key={j} className="flex items-center justify-between p-3">
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-24" />
-                        <Skeleton className="h-3 w-20" />
-                      </div>
-                      <Skeleton className="h-6 w-16" />
-                    </div>
-                  ))}
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen isLoading={isLoading} />;
   }
 
   return (
@@ -133,8 +115,8 @@ const Dashboard = () => {
                 <Users className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="font-bold text-xl text-foreground">Campus Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Management Hub</p>
+                <h1 className="font-bold text-xl text-foreground">CampBuzz Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Campus Management Hub</p>
               </div>
             </div>
 
@@ -154,6 +136,12 @@ const Dashboard = () => {
                   Events
                 </button>
                 <button
+                  onClick={() => scrollToSection('calendar')}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Calendar
+                </button>
+                <button
                   onClick={() => scrollToSection('clubs')}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -164,6 +152,12 @@ const Dashboard = () => {
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Analytics
+                </button>
+                <button
+                  onClick={() => scrollToSection('tech-features')}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Tech Features
                 </button>
               </nav>
 
@@ -179,13 +173,109 @@ const Dashboard = () => {
                     className="pl-10 pr-4 py-2 text-sm bg-muted rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary/20 w-48"
                   />
                 </div>
-                <Button variant="outline" size="sm" className="relative">
-                  <Bell className="h-4 w-4" />
-                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full"></span>
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Settings className="h-4 w-4" />
-                </Button>
+                {/* Animated Notification Button */}
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="relative"
+                    onClick={() => {
+                      setShowNotificationPanel(!showNotificationPanel);
+                      setHasOpenedNotifications(true);
+                    }}
+                  >
+                    <Bell className="h-4 w-4" />
+                  </Button>
+
+                  {/* Animated Counter Badge - disappears permanently after opening notifications */}
+                  {notificationCount > 0 && !showNotificationPanel && !hasOpenedNotifications && (
+                    <div className="absolute -top-2 -right-2 flex items-center justify-center">
+                      <span className="relative inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
+                        {notificationCount}
+                        {/* Pulsing ring animation */}
+                        <span className="absolute inset-0 w-full h-full bg-red-500 rounded-full animate-ping opacity-75"></span>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Notification Dropdown Panel */}
+                  {showNotificationPanel && (
+                    <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg z-50">
+                      <div className="p-4 border-b border-border">
+                        <h3 className="font-semibold text-foreground">Notifications</h3>
+                        <p className="text-sm text-muted-foreground">{notificationCount} new notifications</p>
+                      </div>
+                      <div className="max-h-64 overflow-y-auto">
+                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-sm font-medium">Event starting in 30 minutes</p>
+                              <p className="text-xs text-muted-foreground">Tech Talk 2024</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-sm font-medium">New message from Sarah</p>
+                              <p className="text-xs text-muted-foreground">2 minutes ago</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-sm font-medium">Achievement unlocked!</p>
+                              <p className="text-xs text-muted-foreground">Event Organizer badge</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-sm font-medium">Photography Club posted new photos</p>
+                              <p className="text-xs text-muted-foreground">1 hour ago</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 border-t border-border">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            setNotificationsViewed(true);
+                            setNotificationCount(0); // Clear the notification count
+                            setShowNotificationPanel(false);
+                          }}
+                        >
+                          Mark All as Read
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Settings Button with Dropdown */}
+                <div className="relative settings-container">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowSettingsPanel(!showSettingsPanel)}
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+
+                  {/* Settings Dropdown Panel */}
+                  <DashboardSettings
+                    isOpen={showSettingsPanel}
+                    onClose={() => setShowSettingsPanel(false)}
+                  />
+                </div>
                 <Link to="/events/new">
                   <Button size="sm">
                     <Plus className="h-4 w-4 mr-2" />
@@ -224,6 +314,12 @@ const Dashboard = () => {
                   Events
                 </button>
                 <button
+                  onClick={() => scrollToSection('calendar')}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
+                  Calendar
+                </button>
+                <button
                   onClick={() => scrollToSection('clubs')}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors text-left"
                 >
@@ -235,6 +331,12 @@ const Dashboard = () => {
                 >
                   Analytics
                 </button>
+                <button
+                  onClick={() => scrollToSection('tech-features')}
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
+                  Tech Features
+                </button>
               </nav>
             </div>
           )}
@@ -243,15 +345,367 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6 space-y-8">
-        {/* Welcome Section */}
+        {/* Enhanced Welcome Section */}
         <section id="overview" className="scroll-mt-20">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Welcome back! 👋
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Here's what's happening in your campus community today.
-            </p>
+          <div className="space-y-8">
+            {/* Personalized Welcome Header */}
+            <div className="text-center">
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+                Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, John! 👋
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+                Here's what's happening in your campus community today.
+              </p>
+
+              {/* Quick Action Buttons */}
+              <div className="flex flex-wrap justify-center gap-3 mb-8">
+                <Link to="/events/new">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90">
+                    <Plus className="h-5 w-5 mr-2" />
+                    Create Event
+                  </Button>
+                </Link>
+                <Link to="/clubs">
+                  <Button variant="outline" size="lg">
+                    <Users className="h-5 w-5 mr-2" />
+                    Join Club
+                  </Button>
+                </Link>
+                <Link to="/communication">
+                  <Button variant="outline" size="lg">
+                    <MessageSquare className="h-5 w-5 mr-2" />
+                    Send Message
+                  </Button>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setShowCalendarModal(true)}
+                >
+                  <Calendar className="h-5 w-5 mr-2" />
+                  View Calendar
+                </Button>
+              </div>
+            </div>
+
+            {/* Quick Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Card className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Calendar className="h-8 w-8 text-blue-600" />
+                </div>
+                <p className="text-2xl font-bold">3</p>
+                <p className="text-sm text-muted-foreground">Events Today</p>
+              </Card>
+              <Card className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <MessageSquare className="h-8 w-8 text-green-600" />
+                </div>
+                <p className="text-2xl font-bold">5</p>
+                <p className="text-sm text-muted-foreground">New Messages</p>
+              </Card>
+              <Card className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Users className="h-8 w-8 text-purple-600" />
+                </div>
+                <p className="text-2xl font-bold">2</p>
+                <p className="text-sm text-muted-foreground">Pending Tasks</p>
+              </Card>
+              <Card className="p-4 text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <Trophy className="h-8 w-8 text-orange-600" />
+                </div>
+                <p className="text-2xl font-bold">87%</p>
+                <p className="text-sm text-muted-foreground">Attendance Rate</p>
+              </Card>
+            </div>
+
+            {/* Main Overview Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Professional Activity Feed */}
+              <Card className="lg:col-span-2 shadow-lg border-0 bg-gradient-to-br from-card to-card/50">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                      <Activity className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold">
+                        Recent Activity
+                      </span>
+                      <p className="text-sm text-muted-foreground font-normal mt-1">
+                        Your latest campus engagements
+                      </p>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-r from-blue-50/50 to-blue-100/30 hover:from-blue-100/50 hover:to-blue-200/30 transition-all duration-300 hover:shadow-md">
+                    <div className="flex items-start gap-4 p-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                          <Users className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground group-hover:text-blue-700 transition-colors">
+                          You joined Photography Club
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm text-muted-foreground">Club Membership</span>
+                          <span className="text-xs text-muted-foreground">•</span>
+                          <span className="text-sm font-medium text-blue-600">2 hours ago</span>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-r from-green-50/50 to-green-100/30 hover:from-green-100/50 hover:to-green-200/30 transition-all duration-300 hover:shadow-md">
+                    <div className="flex items-start gap-4 p-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
+                          <Calendar className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground group-hover:text-green-700 transition-colors">
+                          RSVP'd to Tech Talk 2024
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm text-muted-foreground">Event Registration</span>
+                          <span className="text-xs text-muted-foreground">•</span>
+                          <span className="text-sm font-medium text-green-600">4 hours ago</span>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-r from-purple-50/50 to-purple-100/30 hover:from-purple-100/50 hover:to-purple-200/30 transition-all duration-300 hover:shadow-md">
+                    <div className="flex items-start gap-4 p-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                          <Trophy className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground group-hover:text-purple-700 transition-colors">
+                          Achievement Unlocked: Event Organizer
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm text-muted-foreground">Achievement</span>
+                          <span className="text-xs text-muted-foreground">•</span>
+                          <span className="text-sm font-medium text-purple-600">1 day ago</span>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-r from-orange-50/50 to-orange-100/30 hover:from-orange-100/50 hover:to-orange-200/30 transition-all duration-300 hover:shadow-md">
+                    <div className="flex items-start gap-4 p-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
+                          <Clock className="h-5 w-5 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground group-hover:text-orange-700 transition-colors">
+                          Workshop starting in 2 hours
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-sm text-muted-foreground">Reminder</span>
+                          <span className="text-xs text-muted-foreground">•</span>
+                          <span className="text-sm font-medium text-orange-600">Upcoming</span>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Smart Notifications & Weather */}
+              <div className="space-y-4">
+                {/* Notifications Summary */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Bell className="h-5 w-5" />
+                      Notifications
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <span>Event starting in 30 minutes</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>New club announcement</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span>3 friends attending Tech Talk</span>
+                    </div>
+                    <Button variant="outline" size="sm" className="w-full mt-3">
+                      View All
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Weather & Time */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Calendar className="h-5 w-5" />
+                      Today
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center space-y-2">
+                      <div className="text-3xl">☀️</div>
+                      <p className="font-semibold">Sunny, 72°F</p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date().toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Next event: 2:00 PM
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Performance Metrics */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Trophy className="h-5 w-5" />
+                      Your Stats
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Events Attended</span>
+                      <Badge variant="secondary">15 this month</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Connections</span>
+                      <Badge variant="secondary">23 new</Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Achievements</span>
+                      <Badge variant="secondary">Event Organizer</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Quick Links Hub */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-5 w-5" />
+                  Quick Access
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Link to="/events">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Popular Events
+                    </Button>
+                  </Link>
+                  <Link to="/clubs">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Users className="h-4 w-4 mr-2" />
+                      Your Clubs
+                    </Button>
+                  </Link>
+                  <Link to="/recommendations">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Trophy className="h-4 w-4 mr-2" />
+                      AI Recommendations
+                    </Button>
+                  </Link>
+                  <Link to="/budget-sponsorship">
+                    <Button variant="outline" className="w-full justify-start">
+                      <DollarSign className="h-4 w-4 mr-2" />
+                      Budget & Sponsorship
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* System Status */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  System Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span className="text-sm font-medium">All Systems Operational</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <span>Profile: 100%</span>
+                    <span>Storage: 2.1GB/10GB</span>
+                    <span>Uptime: 99.9%</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Interactive Mood Check */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  How are you feeling today?
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-center gap-2">
+                  <Button variant="outline" size="sm">😊 Great</Button>
+                  <Button variant="outline" size="sm">😐 Okay</Button>
+                  <Button variant="outline" size="sm">😴 Tired</Button>
+                  <Button variant="outline" size="sm">🤔 Thinking</Button>
+                  <Button variant="outline" size="sm">😎 Excited</Button>
+                </div>
+                <p className="text-center text-sm text-muted-foreground mt-3">
+                  Your mood helps us personalize your experience!
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
@@ -276,6 +730,26 @@ const Dashboard = () => {
             ))}
           </div>
         </section>
+
+        {/* AI Event Recommendations */}
+        <section id="recommendations" className="scroll-mt-20">
+          <EventRecommendations />
+        </section>
+
+        {/* Advanced Tech Features */}
+        <section id="tech-features" className="scroll-mt-20">
+          <div className="mb-6">
+            <h2 className="text-3xl font-bold text-foreground mb-2">Advanced Technology Features</h2>
+            <p className="text-muted-foreground">Experience the future of campus management with cutting-edge technology</p>
+          </div>
+          <AdvancedTechFeatures />
+        </section>
+
+        {/* Calendar Modal */}
+        <CalendarModal
+          isOpen={showCalendarModal}
+          onClose={() => setShowCalendarModal(false)}
+        />
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
