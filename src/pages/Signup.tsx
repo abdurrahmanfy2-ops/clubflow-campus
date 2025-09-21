@@ -228,6 +228,7 @@ const Signup = () => {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
