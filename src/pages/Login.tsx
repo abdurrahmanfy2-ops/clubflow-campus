@@ -66,12 +66,15 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--campus-navy))] via-[hsl(220,26%,18%)] to-[hsl(var(--campus-navy))]" style={{
       backgroundImage: `
-        radial-gradient(circle at 20% 50%, hsl(var(--campus-green))/0.1 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, hsl(var(--campus-green))/0.1 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, hsl(var(--campus-green))/0.05 0%, transparent 50%)
+        radial-gradient(circle at 20% 50%, hsl(var(--campus-green))/0.15 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, hsl(var(--campus-green))/0.12 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, hsl(var(--campus-green))/0.08 0%, transparent 50%),
+        radial-gradient(circle at 60% 30%, hsl(var(--campus-green))/0.06 0%, transparent 50%)
       `,
-      backgroundSize: '800px 800px, 600px 600px, 900px 900px',
-      backgroundPosition: '0% 0%, 100% 0%, 50% 100%'
+      backgroundSize: '800px 800px, 600px 600px, 900px 900px, 700px 700px',
+      backgroundPosition: '0% 0%, 100% 0%, 50% 100%, 30% 70%',
+      transform: 'perspective(1200px)',
+      transformStyle: 'preserve-3d'
     }}>
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-20">
@@ -120,7 +123,16 @@ const Login = () => {
           </div>
 
           {/* Login Form */}
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-8 shadow-2xl">
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-8 shadow-2xl" style={{
+            boxShadow: `
+              0 25px 50px -12px rgba(0, 0, 0, 0.25),
+              0 0 0 1px rgba(255, 255, 255, 0.05),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1),
+              0 8px 32px rgba(76, 175, 80, 0.1)
+            `,
+            transform: 'perspective(1000px) rotateX(2deg)',
+            transformStyle: 'preserve-3d'
+          }}>
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="username" className="text-sm font-medium text-gray-200">
@@ -131,9 +143,14 @@ const Login = () => {
                     id="username"
                     type="text"
                     placeholder="john.doe@university.edu"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-[hsl(var(--campus-green))] focus:ring-[hsl(var(--campus-green))]/20 transition-colors ${
+                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-[hsl(var(--campus-green))] focus:ring-[hsl(var(--campus-green))]/20 transition-all duration-300 hover:bg-white/15 focus:bg-white/15 ${
                       errors.username ? 'border-red-500 focus:border-red-500' : ''
                     }`}
+                    style={{
+                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1)',
+                      transform: 'perspective(1000px) rotateX(1deg)',
+                      transformStyle: 'preserve-3d'
+                    }}
                     value={username}
                     onChange={(e) => {
                       setUsername(e.target.value);
@@ -170,9 +187,14 @@ const Login = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your secure password"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-[hsl(var(--campus-green))] focus:ring-[hsl(var(--campus-green))]/20 pr-10 transition-colors ${
+                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-[hsl(var(--campus-green))] focus:ring-[hsl(var(--campus-green))]/20 pr-10 transition-all duration-300 hover:bg-white/15 focus:bg-white/15 ${
                       errors.password ? 'border-red-500 focus:border-red-500' : ''
                     }`}
+                    style={{
+                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1)',
+                      transform: 'perspective(1000px) rotateX(1deg)',
+                      transformStyle: 'preserve-3d'
+                    }}
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
@@ -215,7 +237,17 @@ const Login = () => {
               <Button
                 type="submit"
                 disabled={isLoading || !username.trim() || !password}
-                className="w-full bg-[hsl(var(--campus-green))] hover:bg-[hsl(var(--campus-green))]/90 disabled:bg-gray-600 disabled:cursor-not-allowed text-[hsl(var(--campus-navy))] font-semibold py-3 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+                className="w-full bg-[hsl(var(--campus-green))] hover:bg-[hsl(var(--campus-green))]/90 disabled:bg-gray-600 disabled:cursor-not-allowed text-[hsl(var(--campus-navy))] font-semibold py-3 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden"
+                style={{
+                  boxShadow: `
+                    0 10px 25px -5px hsl(var(--campus-green)),
+                    0 4px 12px -2px rgba(76, 175, 80, 0.3),
+                    inset 0 1px 0 hsl(45, 100%, 70%),
+                    0 0 0 1px rgba(255, 255, 255, 0.1)
+                  `,
+                  transform: 'perspective(1000px) rotateX(-2deg)',
+                  transformStyle: 'preserve-3d'
+                }}
               >
                 {isLoading ? (
                   <>
