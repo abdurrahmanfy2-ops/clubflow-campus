@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, Calendar, Trophy, TrendingUp, Plus, Menu, Bell, Search, Settings, MessageSquare, Mail, Smartphone, Megaphone, Send, Archive, Filter, Star, Activity, DollarSign, ArrowRight, Clock } from "lucide-react";
+import { Users, Calendar, Trophy, TrendingUp, Plus, Menu, Bell, Search, Settings, MessageSquare, Mail, Smartphone, Megaphone, Send, Archive, Filter, Star, Activity, DollarSign, ArrowRight, Clock, BookOpen, Microscope, FileText, Award, Target, BarChart3, Users2, GraduationCap, Lightbulb, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import EventRecommendations from "@/components/EventRecommendations";
@@ -10,8 +10,11 @@ import LoadingScreen from "@/components/LoadingScreen";
 import DashboardSettings from "@/components/DashboardSettings";
 import CalendarModal from "@/components/CalendarModal";
 import AdvancedTechFeatures from "@/components/AdvancedTechFeatures";
+import { useUser } from "@/contexts/UserContext";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 
 const Dashboard = () => {
+  const { currentUser, isLoading: userLoading } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,6 +24,7 @@ const Dashboard = () => {
   const [hasOpenedNotifications, setHasOpenedNotifications] = useState(false);
   const [showSettingsPanel, setShowSettingsPanel] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
 
   // Mock data
   const stats = [
@@ -99,191 +103,204 @@ const Dashboard = () => {
     return () => clearInterval(interval);
   }, [showNotificationPanel]);
 
-  if (isLoading) {
-    return <LoadingScreen isLoading={isLoading} />;
+  if (isLoading || userLoading) {
+    return <LoadingScreen isLoading={isLoading || userLoading} />;
   }
 
   return (
     <div className="min-h-screen bg-background">
       {/* Sticky Navigation Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b transition-all duration-300">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            {/* Logo and Title */}
-            <div className="flex items-center gap-3">
-              <div className="bg-primary text-primary-foreground p-2 rounded-lg">
-                <Users className="h-6 w-6" />
-              </div>
-              <div>
-                <h1 className="font-bold text-xl text-foreground">CampBuzz Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Campus Management Hub</p>
-              </div>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
-              <nav className="flex items-center gap-6">
-                <button
-                  onClick={() => scrollToSection('overview')}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Overview
-                </button>
-                <button
-                  onClick={() => scrollToSection('events')}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Events
-                </button>
-                <button
-                  onClick={() => scrollToSection('calendar')}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Calendar
-                </button>
-                <button
-                  onClick={() => scrollToSection('clubs')}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Clubs
-                </button>
-                <button
-                  onClick={() => scrollToSection('analytics')}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Analytics
-                </button>
-                <button
-                  onClick={() => scrollToSection('tech-features')}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Tech Features
-                </button>
-              </nav>
-
-              {/* Action Buttons */}
+      {isNavbarVisible && (
+        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b transition-all duration-300">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex justify-between items-center">
+              {/* Logo and Title */}
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 text-sm bg-muted rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary/20 w-48"
-                  />
+                <div className="bg-primary text-primary-foreground p-2 rounded-lg">
+                  <Users className="h-6 w-6" />
                 </div>
-                {/* Animated Notification Button */}
-                <div className="relative">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="relative"
-                    onClick={() => {
-                      setShowNotificationPanel(!showNotificationPanel);
-                      setHasOpenedNotifications(true);
-                    }}
-                  >
-                    <Bell className="h-4 w-4" />
-                  </Button>
-
-                  {/* Animated Counter Badge - disappears permanently after opening notifications */}
-                  {notificationCount > 0 && !showNotificationPanel && !hasOpenedNotifications && (
-                    <div className="absolute -top-2 -right-2 flex items-center justify-center">
-                      <span className="relative inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
-                        {notificationCount}
-                        {/* Pulsing ring animation */}
-                        <span className="absolute inset-0 w-full h-full bg-red-500 rounded-full animate-ping opacity-75"></span>
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Notification Dropdown Panel */}
-                  {showNotificationPanel && (
-                    <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-lg shadow-lg z-50">
-                      <div className="p-4 border-b border-border">
-                        <h3 className="font-semibold text-foreground">Notifications</h3>
-                        <p className="text-sm text-muted-foreground">{notificationCount} new notifications</p>
-                      </div>
-                      <div className="max-h-64 overflow-y-auto">
-                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-sm font-medium">Event starting in 30 minutes</p>
-                              <p className="text-xs text-muted-foreground">Tech Talk 2024</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-sm font-medium">New message from Sarah</p>
-                              <p className="text-xs text-muted-foreground">2 minutes ago</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-sm font-medium">Achievement unlocked!</p>
-                              <p className="text-xs text-muted-foreground">Event Organizer badge</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-3 hover:bg-muted/50 cursor-pointer">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-sm font-medium">Photography Club posted new photos</p>
-                              <p className="text-xs text-muted-foreground">1 hour ago</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-3 border-t border-border">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="w-full"
-                          onClick={() => {
-                            setNotificationsViewed(true);
-                            setNotificationCount(0); // Clear the notification count
-                            setShowNotificationPanel(false);
-                          }}
-                        >
-                          Mark All as Read
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                <div>
+                  <h1 className="font-bold text-xl text-foreground">CampBuzz Dashboard</h1>
+                  <p className="text-sm text-muted-foreground">Campus Management Hub</p>
                 </div>
-                {/* Settings Button with Dropdown */}
-                <div className="relative settings-container">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowSettingsPanel(!showSettingsPanel)}
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-
-                  {/* Settings Dropdown Panel */}
-                  <DashboardSettings
-                    isOpen={showSettingsPanel}
-                    onClose={() => setShowSettingsPanel(false)}
-                  />
-                </div>
-                <Link to="/events/new">
-                  <Button size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Event
-                  </Button>
-                </Link>
               </div>
-            </div>
+
+              {/* Navbar Toggle Button */}
+              <div className="flex items-center">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsNavbarVisible(!isNavbarVisible)}
+                  className="mr-2"
+                >
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center gap-6">
+                <nav className="flex items-center gap-6">
+                  <button
+                    onClick={() => scrollToSection('overview')}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Overview
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('events')}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Events
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('calendar')}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Calendar
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('clubs')}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Clubs
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('analytics')}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Analytics
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('tech-features')}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Tech Features
+                  </button>
+                </nav>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="relative hidden sm:block">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      placeholder="Search..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 pr-4 py-2 text-sm bg-muted rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary/20 w-32 md:w-48"
+                    />
+                  </div>
+                  {/* Animated Notification Button */}
+                  <div className="relative">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="relative"
+                      onClick={() => {
+                        setShowNotificationPanel(!showNotificationPanel);
+                        setHasOpenedNotifications(true);
+                      }}
+                    >
+                      <Bell className="h-4 w-4" />
+                    </Button>
+
+                    {/* Animated Counter Badge - disappears permanently after opening notifications */}
+                    {notificationCount > 0 && !showNotificationPanel && !hasOpenedNotifications && (
+                      <div className="absolute -top-2 -right-2 flex items-center justify-center">
+                        <span className="relative inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
+                          {notificationCount}
+                          {/* Pulsing ring animation */}
+                          <span className="absolute inset-0 w-full h-full bg-red-500 rounded-full animate-ping opacity-75"></span>
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Notification Dropdown Panel */}
+                    {showNotificationPanel && (
+                      <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border border-border rounded-lg shadow-lg z-50">
+                        <div className="p-4 border-b border-border">
+                          <h3 className="font-semibold text-foreground">Notifications</h3>
+                          <p className="text-sm text-muted-foreground">{notificationCount} new notifications</p>
+                        </div>
+                        <div className="max-h-64 overflow-y-auto">
+                          <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                              <div>
+                                <p className="text-sm font-medium">Event starting in 30 minutes</p>
+                                <p className="text-xs text-muted-foreground">Tech Talk 2024</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                              <div>
+                                <p className="text-sm font-medium">New message from Sarah</p>
+                                <p className="text-xs text-muted-foreground">2 minutes ago</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                              <div>
+                                <p className="text-sm font-medium">Achievement unlocked!</p>
+                                <p className="text-xs text-muted-foreground">Event Organizer badge</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="p-3 hover:bg-muted/50 cursor-pointer">
+                            <div className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
+                              <div>
+                                <p className="text-sm font-medium">Photography Club posted new photos</p>
+                                <p className="text-xs text-muted-foreground">1 hour ago</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-3 border-t border-border">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => {
+                              setNotificationsViewed(true);
+                              setNotificationCount(0); // Clear the notification count
+                              setShowNotificationPanel(false);
+                            }}
+                          >
+                            Mark All as Read
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  {/* Settings Button with Dropdown */}
+                  <div className="relative settings-container">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowSettingsPanel(!showSettingsPanel)}
+                    >
+                      <Settings className="h-4 w-4" />
+                    </Button>
+
+                    {/* Settings Dropdown Panel */}
+                    <DashboardSettings
+                      isOpen={showSettingsPanel}
+                      onClose={() => setShowSettingsPanel(false)}
+                    />
+                  </div>
+                  <Link to="/events/new">
+                    <Button size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Event
+                    </Button>
+                  </Link>
+                </div>
+              </div>
 
             {/* Mobile Menu Button */}
             <div className="md:hidden">
@@ -342,6 +359,7 @@ const Dashboard = () => {
           )}
         </div>
       </header>
+      )}
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6 space-y-8">
@@ -349,41 +367,59 @@ const Dashboard = () => {
         <section id="overview" className="scroll-mt-20">
           <div className="space-y-8">
             {/* Personalized Welcome Header */}
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, John! 👋
+            <div className="text-center px-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {currentUser?.name || 'User'}! 👋
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-2 px-2">
                 Here's what's happening in your campus community today.
               </p>
+              {currentUser && (
+                <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground mb-6">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="capitalize">
+                      {currentUser.role.replace('_', ' ')}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>•</span>
+                    <span>{currentUser.college}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Quick Action Buttons */}
-              <div className="flex flex-wrap justify-center gap-3 mb-8">
-                <Link to="/events/new">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90">
-                    <Plus className="h-5 w-5 mr-2" />
-                    Create Event
+              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 px-2">
+                <Link to="/events/new" className="flex-1 min-w-0 sm:flex-none">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
+                    <Plus className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <span className="hidden xs:inline">Create Event</span>
+                    <span className="xs:hidden">Create</span>
                   </Button>
                 </Link>
-                <Link to="/clubs">
-                  <Button variant="outline" size="lg">
-                    <Users className="h-5 w-5 mr-2" />
-                    Join Club
+                <Link to="/clubs" className="flex-1 min-w-0 sm:flex-none">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                    <Users className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <span className="hidden xs:inline">Join Club</span>
+                    <span className="xs:hidden">Clubs</span>
                   </Button>
                 </Link>
-                <Link to="/communication">
-                  <Button variant="outline" size="lg">
-                    <MessageSquare className="h-5 w-5 mr-2" />
-                    Send Message
+                <Link to="/communication" className="flex-1 min-w-0 sm:flex-none">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                    <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <span className="hidden xs:inline">Send Message</span>
+                    <span className="xs:hidden">Message</span>
                   </Button>
                 </Link>
                 <Button
                   variant="outline"
                   size="lg"
                   onClick={() => setShowCalendarModal(true)}
+                  className="flex-1 min-w-0 sm:flex-none w-full sm:w-auto"
                 >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  View Calendar
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  <span className="hidden xs:inline">View Calendar</span>
+                  <span className="xs:hidden">Calendar</span>
                 </Button>
               </div>
             </div>
@@ -694,12 +730,12 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex justify-center gap-2">
-                  <Button variant="outline" size="sm">😊 Great</Button>
-                  <Button variant="outline" size="sm">😐 Okay</Button>
-                  <Button variant="outline" size="sm">😴 Tired</Button>
-                  <Button variant="outline" size="sm">🤔 Thinking</Button>
-                  <Button variant="outline" size="sm">😎 Excited</Button>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">😊 Great</Button>
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">😐 Okay</Button>
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">😴 Tired</Button>
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">🤔 Thinking</Button>
+                  <Button variant="outline" size="sm" className="flex-1 sm:flex-none">😎 Excited</Button>
                 </div>
                 <p className="text-center text-sm text-muted-foreground mt-3">
                   Your mood helps us personalize your experience!

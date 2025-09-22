@@ -4,11 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link } from "react-router-dom";
-import { GraduationCap, Mail, Lock, User, Building2, Users } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { GraduationCap, Mail, Lock, User, Building2, Users, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { userApi, SignupData } from "@/lib/api";
+import { useUser } from "@/contexts/UserContext";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const { setCurrentUser } = useUser();
+  const [formData, setFormData] = useState<SignupData>({
     name: "",
     email: "",
     password: "",
@@ -16,10 +20,34 @@ const Signup = () => {
     role: "",
     college: ""
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Signup:", formData);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const result = await userApi.signup(formData);
+
+      if (result.success && result.data) {
+        setSuccess(true);
+        // Set the current user in context
+        setCurrentUser(result.data);
+        // Redirect to dashboard after successful signup
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
+      } else {
+        setError(result.error || "An error occurred during signup");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -142,7 +170,7 @@ const Signup = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
-                <Select onValueChange={(value) => setFormData({...formData, role: value})}>
+                <Select onValueChange={(value) => setFormData({...formData, role: value as SignupData['role']})}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
@@ -198,7 +226,8 @@ const Signup = () => {
 
               <Button
                 type="submit"
-                className="w-full bg-[hsl(var(--campus-green))] hover:bg-[hsl(var(--campus-green))]/90 text-[hsl(var(--campus-navy))] font-semibold py-3 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+                disabled={isLoading}
+                className="w-full bg-[hsl(var(--campus-green))] hover:bg-[hsl(var(--campus-green))]/90 text-[hsl(var(--campus-navy))] font-semibold py-3 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   boxShadow: `
                     0 10px 25px -5px hsl(var(--campus-green)),
@@ -210,8 +239,36 @@ const Signup = () => {
                   transformStyle: 'preserve-3d'
                 }}
               >
-                Create Account
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : success ? (
+                  <>
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    Account Created!
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
+
+              {/* Error Message */}
+              {error && (
+                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-400">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">{error}</span>
+                </div>
+              )}
+
+              {/* Success Message */}
+              {success && (
+                <div className="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center gap-2 text-green-400">
+                  <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                  <span className="text-sm">Account created successfully! Redirecting to dashboard...</span>
+                </div>
+              )}
             </form>
 
             <div className="mt-6 text-center text-sm">

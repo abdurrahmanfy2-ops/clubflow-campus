@@ -39,7 +39,7 @@ const BudgetSponsorship = () => {
               <div>
                 <h1 className="text-3xl font-bold text-foreground">Budget & Sponsorship Manager</h1>
                 <p className="text-muted-foreground">
-                  Comprehensive financial management and sponsorship platform for campus clubs
+                  Comprehensive financial management and sponsorship platform for Campbuzz
                 </p>
               </div>
             </div>

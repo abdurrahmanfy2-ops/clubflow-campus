@@ -39,6 +39,7 @@ import {
   Wallet
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useUser } from "@/contexts/UserContext";
 
 interface LayoutProps {
   children: ReactNode;
@@ -46,6 +47,7 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
+  const { currentUser } = useUser();
   const [isAdminExpanded, setIsAdminExpanded] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isFavoritesExpanded, setIsFavoritesExpanded] = useState(false);
@@ -480,11 +482,11 @@ There was an error signing you out. Please try again or contact support if the p
           <div className="p-4 border-t border-border">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-medium">
-                JD
+                {currentUser?.name ? currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'U'}
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">John Doe</p>
-                <p className="text-xs text-muted-foreground">Student</p>
+                <p className="text-sm font-medium text-foreground">{currentUser?.name || 'User'}</p>
+                <p className="text-xs text-muted-foreground capitalize">{currentUser?.role.replace('_', ' ') || 'Student'}</p>
               </div>
             </div>
             <Button

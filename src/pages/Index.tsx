@@ -12,7 +12,7 @@ const Index = () => {
     {
       icon: Users,
       title: "Club Management",
-      description: "Organize and manage your campus clubs with ease",
+      description: "Organize and manage your Campbuzz with ease",
       gradient: "from-blue-500/20 to-cyan-500/20"
     },
     {

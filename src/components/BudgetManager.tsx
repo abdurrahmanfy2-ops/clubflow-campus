@@ -275,7 +275,7 @@ const BudgetManager = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="amount">Amount ($)</Label>
+                    <Label htmlFor="amount">Amount (₹)</Label>
                     <Input
                       id="amount"
                       type="number"

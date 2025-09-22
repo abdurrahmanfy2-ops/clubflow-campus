@@ -2,24 +2,28 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GraduationCap, Users, Sparkles, ArrowRight, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
+import { userApi, User } from "@/lib/api";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+  const { setCurrentUser } = useUser();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState<{username?: string; password?: string}>({});
+  const [errors, setErrors] = useState<{email?: string; password?: string}>({});
 
   const validateForm = () => {
-    const newErrors: {username?: string; password?: string} = {};
+    const newErrors: {email?: string; password?: string} = {};
 
-    if (!username.trim()) {
-      newErrors.username = "Username or email is required";
-    } else if (username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
+    if (!email.trim()) {
+      newErrors.email = "Email address is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
     }
 
     if (!password) {
@@ -43,21 +47,38 @@ const Login = () => {
     setErrors({});
 
     try {
-      // Simulate login process
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Handle login logic here
-      console.log("Login:", { username, password, rememberMe });
-
-      // Simulate success/failure
-      if (username === "admin" && password === "password") {
-        // Success - redirect would happen here
-        console.log("Login successful");
-      } else {
-        throw new Error("Invalid credentials");
+      // Get all users from database
+      const storedUsers = localStorage.getItem('campbuzz_users');
+      if (!storedUsers) {
+        throw new Error("No users found. Please create an account first.");
       }
+
+      const users: User[] = JSON.parse(storedUsers);
+
+      // Find user by email
+      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+      if (!user) {
+        throw new Error("No account found with this email address.");
+      }
+
+      // Verify password (in real app, this would be hashed)
+      if (user.password !== password) {
+        throw new Error("Incorrect password. Please try again.");
+      }
+
+      // Login successful - set current user in context
+      setCurrentUser(user);
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+
     } catch (error) {
-      setErrors({ username: "Invalid username or password", password: "Invalid username or password" });
+      const errorMessage = error instanceof Error ? error.message : "Login failed. Please try again.";
+      setErrors({
+        email: errorMessage,
+        password: errorMessage
+      });
     } finally {
       setIsLoading(false);
     }
@@ -135,37 +156,37 @@ const Login = () => {
           }}>
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-medium text-gray-200">
-                  Username or Email Address
+                <Label htmlFor="email" className="text-sm font-medium text-gray-200">
+                  Email Address
                 </Label>
                 <div className="relative">
                   <Input
-                    id="username"
-                    type="text"
+                    id="email"
+                    type="email"
                     placeholder="john.doe@university.edu"
                     className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-[hsl(var(--campus-green))] focus:ring-[hsl(var(--campus-green))]/20 transition-all duration-300 hover:bg-white/15 focus:bg-white/15 ${
-                      errors.username ? 'border-red-500 focus:border-red-500' : ''
+                      errors.email ? 'border-red-500 focus:border-red-500' : ''
                     }`}
                     style={{
                       boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1)',
                       transform: 'perspective(1000px) rotateX(1deg)',
                       transformStyle: 'preserve-3d'
                     }}
-                    value={username}
+                    value={email}
                     onChange={(e) => {
-                      setUsername(e.target.value);
-                      if (errors.username) setErrors({...errors, username: undefined});
+                      setEmail(e.target.value);
+                      if (errors.email) setErrors({...errors, email: undefined});
                     }}
                     required
                   />
-                  {username && !errors.username && (
+                  {email && !errors.email && (
                     <CheckCircle className="absolute right-3 top-3 h-4 w-4 text-green-500" />
                   )}
                 </div>
-                {errors.username && (
+                {errors.email && (
                   <p className="text-red-400 text-xs flex items-center gap-1">
                     <AlertCircle className="h-3 w-3" />
-                    {errors.username}
+                    {errors.email}
                   </p>
                 )}
               </div>
@@ -236,7 +257,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                disabled={isLoading || !username.trim() || !password}
+                disabled={isLoading || !email.trim() || !password}
                 className="w-full bg-[hsl(var(--campus-green))] hover:bg-[hsl(var(--campus-green))]/90 disabled:bg-gray-600 disabled:cursor-not-allowed text-[hsl(var(--campus-navy))] font-semibold py-3 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden"
                 style={{
                   boxShadow: `
